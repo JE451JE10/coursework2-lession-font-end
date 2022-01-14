@@ -23,7 +23,7 @@ app.get('/collection/:collectionName', (req, res, next) => {
         res.send(results)
     })
 })
-app.listen(3000);
+app.listen(4000);
 
 /*
 TypeError: Cannot read property 'collection' of undefined
