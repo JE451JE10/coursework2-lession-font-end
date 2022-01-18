@@ -19,7 +19,6 @@ MongoClient.connect('mongodb+srv://JE451:<Deacon34>@cluster-lesson.8cspb.mongodb
 // get the collection name
 app.param('collectionName', (req, res, next, collectionName) => {
     req.collection = db.collection(collectionName)
-    // console.log('collection name:', req.collection)
     return next()
 })
 
