@@ -10,10 +10,16 @@ app.use(express.static(staticPath));
 
 
 // connect to MongoDB
-const MongoClient = require('mongodb').MongoClient;
 let db;
-MongoClient.connect('mongodb+srv://JE451:<Deacon34>@cluster-lesson.8cspb.mongodb.net/app?retryWrites=true&w=majority', (err, client) => {
-    db = client.db('app')
+const MongoClient = require('mongodb').MongoClient;
+MongoClient.connect('mongodb+srv://JE451:Deacon34@cluster-lesson.8cspb.mongodb.net/', (err, client) => {
+    if (err) {
+        console.log("db mondodb error ", err)
+        return
+    }
+    else {
+        db = client.db('app')
+    }
 })
 
 // get the collection name
@@ -23,8 +29,8 @@ app.param('collectionName', (req, res, next, collectionName) => {
 })
 
 // dispaly a message for root path to show that API is working
-app.get('/', function (req, res) {
-    res.send('Select a collection, e.g., /collection/messages')
+app.get('/database', function (req, res) {
+    res.send('welcome to mongodb server')
 })
 
 // retrieve all the objects from an collection
@@ -36,13 +42,15 @@ app.get('/collection/:collectionName', (req, res) => {
 })
 
 // retrieve an object by mongodb ID
-const ObjectID = require('mongodb').id; app.get('/collection/:collectionName/:id', (req, res, next) => {
+const ObjectID = require('mongodb').ObjectID;
+app.get('/collection/:collectionName/:ObjectID', (req, res, next) => {
     req.collection.findOne(
-        { id: new id(req.params.id) }, (e, result) => {
+        { _id: new ObjectID(req.params.ObjectID) }, (e, result) => {
             if (e) return next(e)
             res.send(result)
         })
 })
+
 
 // add an object
 app.post('/collection/:collectionName', (req, res, next) => {
@@ -52,10 +60,10 @@ app.post('/collection/:collectionName', (req, res, next) => {
     })
 })
 
+
 // update an object by ID
 app.put('/collection/:collectionName/:id', (req, res, next) => {
-    req.collection.update(
-        { id: new id(req.params.id) },
+    req.collection.update({ _id: new ObjectID(req.params.id) },
         { $set: req.body }, { safe: true, multi: false }, (e, result) => {
             if (e) return next(e)
             res.send((result.result.n === 1) ?
@@ -66,11 +74,10 @@ app.put('/collection/:collectionName/:id', (req, res, next) => {
 // delete an object by ID
 app.delete('/collection/:collectionName/:id', (req, res, next) => {
     req.collection.deleteOne(
-        { id: id(req.params.id) }, (e, result) => {
+        { _id: ObjectID(req.params.id) }, (e, result) => {
             if (e) return next(e)
             res.send((result.result.n === 1) ?
-                { msg: 'success' } :
-                { msg: 'error' })
+                { msg: 'success' } : { msg: 'error' })
         })
 })
 app.listen(3000)
