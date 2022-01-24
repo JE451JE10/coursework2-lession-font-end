@@ -41,17 +41,6 @@ app.get('/collection/:collectionName', (req, res) => {
     })
 })
 
-// retrieve an object by mongodb ID
-const ObjectID = require('mongodb').ObjectID;
-app.get('/collection/:collectionName/:ObjectID', (req, res, next) => {
-    req.collection.findOne(
-        { _id: new ObjectID(req.params.ObjectID) }, (e, result) => {
-            if (e) return next(e)
-            res.send(result)
-        })
-})
-
-
 // add an object
 app.post('/collection/:collectionName', (req, res, next) => {
     req.collection.insert(req.body, (e, results) => {
@@ -61,9 +50,19 @@ app.post('/collection/:collectionName', (req, res, next) => {
 })
 
 
+// retrieve an object by mongodb ID
+const Subject= require('mongodb').Subject;
+app.get('/collection/:collectionName/:Subject', (req, res, next) => {
+    req.collection.findOne(
+        { Subject: new Subject(req.params.Subject) }, (e, result) => {
+            if (e) return next(e)
+            res.send(result)
+        })
+})
+
 // update an object by ID
-app.put('/collection/:collectionName/:id', (req, res, next) => {
-    req.collection.update({ _id: new ObjectID(req.params.id) },
+app.put('/collection/:collectionName/:Subject', (req, res, next) => {
+    req.collection.update({ Subject: new Subject(req.params.Subject) },
         { $set: req.body }, { safe: true, multi: false }, (e, result) => {
             if (e) return next(e)
             res.send((result.result.n === 1) ?
@@ -72,9 +71,9 @@ app.put('/collection/:collectionName/:id', (req, res, next) => {
 })
 
 // delete an object by ID
-app.delete('/collection/:collectionName/:id', (req, res, next) => {
+app.delete('/collection/:collectionName/:Subject', (req, res, next) => {
     req.collection.deleteOne(
-        { _id: ObjectID(req.params.id) }, (e, result) => {
+        { Subject: Subject(req.params.Subject) }, (e, result) => {
             if (e) return next(e)
             res.send((result.result.n === 1) ?
                 { msg: 'success' } : { msg: 'error' })
