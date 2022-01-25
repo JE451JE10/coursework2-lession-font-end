@@ -50,33 +50,7 @@ app.post('/collection/:collectionName', (req, res, next) => {
 })
 
 
-// retrieve an object by mongodb ID
-const Subject= require('mongodb').Subject;
-app.get('/collection/:collectionName/:Subject', (req, res, next) => {
-    req.collection.findOne(
-        { Subject: new Subject(req.params.Subject) }, (e, result) => {
-            if (e) return next(e)
-            res.send(result)
-        })
-})
 
-// update an object by ID
-app.put('/collection/:collectionName/:Subject', (req, res, next) => {
-    req.collection.update({ Subject: new Subject(req.params.Subject) },
-        { $set: req.body }, { safe: true, multi: false }, (e, result) => {
-            if (e) return next(e)
-            res.send((result.result.n === 1) ?
-                { msg: 'success' } : { msg: 'error' })
-        })
-})
 
-// delete an object by ID
-app.delete('/collection/:collectionName/:Subject', (req, res, next) => {
-    req.collection.deleteOne(
-        { Subject: Subject(req.params.Subject) }, (e, result) => {
-            if (e) return next(e)
-            res.send((result.result.n === 1) ?
-                { msg: 'success' } : { msg: 'error' })
-        })
-})
-app.listen(3000)
+const port = process.env.PORT || 3000
+app.listen(port)
