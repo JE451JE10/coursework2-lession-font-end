@@ -30,6 +30,11 @@
         },
         created: function () {
             console.log("requesting data from server...");
+
+            fetch('https://coursework2-lession.herokuapp.com/').then(res => res.text())
+            .then (txt => console.log('server message: ', txt)
+            )
+
             fetch("https://coursework2-lession.herokuapp.com/collection/lesson").then(
                 function (res) {
                     res.json().then(
