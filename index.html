@@ -30,7 +30,7 @@
         },
         created: function () {
             console.log("requesting data from server...");
-            fetch("http://localhost:3000/james/lesson").then(
+            fetch("https://coursework2-lession.herokuapp.com/collection/lesson").then(
                 function (res) {
                     res.json().then(
                         function (json) {
