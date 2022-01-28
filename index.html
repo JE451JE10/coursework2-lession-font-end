@@ -44,6 +44,7 @@
                         <p><b>Subject: {{lessons.Subject}}</b></p>
                         <p><strong>Location: {{lessons.Location}}</strong></p>
                         <p><b>Price: {{lessons.price}}</b></p>
+                        <p><b>Space: {{lessons.Space}}</b></p>
                         <button v-on:click="addToCart(lessons)" :disabled="!canAddToCart(lessons)"><span class="fas fa-cart-plus">
                             </span>Add to Cart</button>
                         <span v-if="lessons.Space - cartCount(lessons) === 0">All Out!</span>
@@ -63,6 +64,7 @@
                         <p><b>Subject: {{lessons.Subject}}</b></p>
                         <p><strong>Location: {{lessons.Location}}</strong></p>
                         <p><b>Price: {{lessons.price}}</b></p>
+                        <p><b>Space: {{lessons.Space}}</b></p>
                         <button @click="del(cart)"><span class="fas fa-cart-arrow-down"></span>Delete</button>
                     </div>
                 </div>
