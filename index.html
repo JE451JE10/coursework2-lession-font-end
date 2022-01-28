@@ -7,18 +7,78 @@
 </head>
 
 <body>
-    <h1>After School Lessons</h1>
     <div id="app">
-        <div style="display: flex; flex-wrap: wrap; gap: 10px">
-            <div v-for="lessons in lessons" style="border: 5px solid blue; width: 150px; background-color: lightblue">
-                <figure>
-                        <img v-bind:src="lessons.image" width="100px">
-                </figure>
-                <p><b>Subject: {{lessons.Subject}}</b></p>
-                <p><strong>Location: {{lessons.Location}}</strong></p>
-                <p><b>Price: {{lessons.price}}</b></p>
+
+        <header>
+            <h1 v-text="sitename"></h1>
+            <button v-on:click='showCheckout'>{{cartItemCount}}<span class="fas fa-shopping-cart"></span>Checkout</button>
+        </header>
+        <main>
+            <div v-if="showProduct">
+
+                <div>
+                    <h1>Sort by</h1>
+                    <p>
+                        <input type="radio" name="Attributes" @click="sortTable('Subject')">
+                        <label for="Subject">Subject</label>
+                        <input type="radio" name="Attributes" @click="sortTable('Location')">
+                        <label for="Location">Location</label>
+                        <input type="radio" name="Attributes" @click="sortTable('price')">
+                        <label for="Price">Price</label>
+                        <input type="radio" name="Attributes" @click="sortTable('Space')">
+                        <label for="Space">Space</label>
+                    </p>
+                    <p>
+                        <input type="radio" name="fav" @click="sortTable('asc')">
+                        <label for="Subject">Ascending</label>
+                        <input type="radio" name="fav" @click="sortTable('desc')">
+                        <label for="Location">Descscending</label>
+                    </p>
+                </div>
+
+                <div style="display: flex; flex-wrap: wrap; gap: 10px">
+                    <div v-for="lessons in lessons" style="border: 5px solid blue; width: 150px; background-color: lightblue">
+                        <figure>
+                            <img v-bind:src="lessons.image" width="100px">
+                        </figure>
+                        <p><b>Subject: {{lessons.Subject}}</b></p>
+                        <p><strong>Location: {{lessons.Location}}</strong></p>
+                        <p><b>Price: {{lessons.price}}</b></p>
+                        <button v-on:click="addToCart(lessons)" :disabled="!canAddToCart(lessons)"><span class="fas fa-cart-plus">
+                            </span>Add to Cart</button>
+                        <span v-if="lessons.Space - cartCount(lessons) === 0">All Out!</span>
+                        <span v-else-if="lessons.Space - cartCount(lessons) < 5">
+                            Only{{lessons.Space - cartCount(lessons)}} left!</span>
+                        <span v-else>Buy Now!</span>
+                    </div>
+                </div>
             </div>
-        </div>
+
+            <div v-else>
+                <div style="display: flex; flex-wrap: wrap; gap: 10px">
+                    <div v-for="lessons in cart" style="border: 5px solid blue; width: 150px; background-color: lightblue">
+                        <figure>
+                            <img v-bind:src="lessons.image" width="100px">
+                        </figure>
+                        <p><b>Subject: {{lessons.Subject}}</b></p>
+                        <p><strong>Location: {{lessons.Location}}</strong></p>
+                        <p><b>Price: {{lessons.price}}</b></p>
+                        <button @click="del(cart)"><span class="fas fa-cart-arrow-down"></span>Delete</button>
+                    </div>
+                </div>
+
+                <h1>Checkout</h1>
+                <p><strong>First Name:</strong>
+                    <input v-model="order.Name" /></p>
+                <p><strong>Phone number:</strong>
+                    <input v-model.number="order.Phonenumber" />
+                </p>
+                <h2>Order Information</h2>
+                <p>Name: {{order.Name}}</p>
+                <p>Phone number: {{order.Phonenumber}}</p>
+                <button @click='submit' type="submit">Checkout</button>
+            </div>
+        </main>
     </div>
 </body>
 
@@ -26,8 +86,62 @@
     let app = new Vue({
         el: '#app',
         data: {
-            lessons: [],
+            sitename: "After School Lessons",
+                showProduct: true,
+                order: {
+                    Name: '',
+                    Phonenumber: '',
+                },
+                lessons: [],
+                cart: []
         },
+        methods: {
+                addToCart(lessons) {
+                    this.cart.push(lessons);
+
+                },
+                showCheckout() {
+                    this.showProduct = this.showProduct ? false : true;
+                },
+
+                canAddToCart(lessons) {
+                    return lessons.Space > this.cartCount(lessons);
+                },
+                cartCount(id) {
+                    let count = 0;
+                    for (let i = 0; i < this.cart.length; i++) {
+                        if (this.cart[i] === id) {
+                            count++;
+                        }
+                    }
+                    return count;
+                },
+                submit() {
+                    if (this.order.Name && this.order.Phonenumber) {
+                        alert("Order Submited")
+                    }
+                    else {
+                        alert("Order Required")
+                    }
+                },
+                del(cart) {
+                    this.cart.splice(cart, 1)
+                },
+                sortTable(key, direction) {
+                    this.sort = `${key} > ${direction}`
+                    if (direction === 'asc') {
+                        this.lessons.sort((a, b) => a[key] > b[key] ? 1 : -1)
+                    } else {
+                        this.lessons.sort((a, b) => a[key] < b[key] ? 1 : -1)
+                    }
+                }
+            },
+            computed: {
+                cartItemCount() {
+                    return this.cart.length || '';
+                },
+            },
+        
         created: function () {
             console.log("requesting data from server...");
 
