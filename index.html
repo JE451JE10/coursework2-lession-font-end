@@ -11,7 +11,7 @@
 
         <header>
             <h1 v-text="sitename"></h1>
-            <button v-on:click='showCheckout'>{{cartItemCount}}<span class="fas fa-shopping-cart"></span>Checkout</button>
+            <button @click='showCheckout'>{{cartItemCount}}<span class="fas fa-shopping-cart"></span>Checkout</button>
         </header>
         <main>
             <div v-if="showProduct">
@@ -45,7 +45,7 @@
                         <p><strong>Location: {{lessons.Location}}</strong></p>
                         <p><b>Price: {{lessons.price}}</b></p>
                         <p><b>Space: {{lessons.Space}}</b></p>
-                        <button v-on:click="addToCart(lessons)" :disabled="!canAddToCart(lessons)"><span class="fas fa-cart-plus">
+                        <button @click="addToCart(lessons)" :disabled="!canAddToCart(lessons)"><span class="fas fa-cart-plus">
                             </span>Add to Cart</button>
                         <span v-if="lessons.Space - cartCount(id) === 0">All Out!</span>
                         <span v-else-if="lessons.Space - cartCount(id) < 10">
@@ -66,31 +66,29 @@
                         <p><strong>Location: {{lessons.Location}}</strong></p>
                         <p><b>Price: {{lessons.price}}</b></p>
                         <p><b>Space: {{lessons.Space}}</b></p>
-                        <!-- <button @click="deleteLesson(lesson)"><span class="fas fa-cart-arrow-down"></span>Delete</button> -->
+                        <button @click="deleteLesson(lesson)"><span class="fas fa-cart-arrow-down"></span>Delete</button>
                     </div>
                 </div>
 
-                
+
                 <h1>Checkout</h1>
-                <form @submit="submit()">
-                    <p>
-                        <strong>First Name:</strong>
-                        <input v-model="order.FirstName" title="Letters only." required />
-                    </p>
-                    <p>
-                        <strong>Second Name:</strong>
-                        <input v-model="order.SecondName" title="Letters only." required />
-                    </p>
-                    <p>
-                        <strong>Phone Number:</strong>
-                        <input v-model="order.Phonenumber" minlength="10" title="Numbers only." required />
-                    </p>
-                    <h2>Order Information</h2>
-                    <p>Name: {{order.FirstName}}</p>
-                    <p>Name: {{order.SecondName}}</p>
-                    <p>Phone number: {{order.Phonenumber}}</p>
-                    <button :disabled='!valid' type="submit">Checkout</button>
-                </form>
+                <p>
+                    <strong>First Name:</strong>
+                    <input v-model="order.FirstName" title="Letters only." required />
+                </p>
+                <p>
+                    <strong>Second Name:</strong>
+                    <input v-model="order.SecondName" title="Letters only." required />
+                </p>
+                <p>
+                    <strong>Phone Number:</strong>
+                    <input v-model="order.Phonenumber" minlength="10" title="Numbers only." required />
+                </p>
+                <h2>Order Information</h2>
+                <p>Name: {{order.FirstName}}</p>
+                <p>Name: {{order.SecondName}}</p>
+                <p>Phone number: {{order.Phonenumber}}</p>
+                <button :disabled='!valid' @click="submit" type="submit">Checkout</button>
             </div>
         </main>
     </div>
@@ -133,16 +131,53 @@
             },
 
             submit() {
+                var AddOrder = {
+                    order: this.cart.id,
+                    FirstName: this.order.FirstName,
+                    SecondName: this.order.SecondName,
+                    Phonenumber: this.order.Phonenumber,
+                    SpaceOrdered: this.cart.Space,
+                };
+
+                // set the url to your server and route
+                fetch("https://coursework2-lession.herokuapp.com/order", {
+                    method: "POST", // set the HTTP method as 'POST'
+                    headers: {
+                        "Content-Type": "application/json", // set the data type as JSON
+                    },
+                    body: JSON.stringify(AddOrder), // need to stringify the JSON object
+                })
+                    .then(response => response.json())
+                    .then(responseJSON => {
+                        console.log('Success:', responseJSON);
+                    });
+
+
+                // set the url to your server and route
+                for (var i = 0; i < this.cart.length; i++) {
+                    id = this.cart[i]._id;
+                    UpdateOrder = { Space: this.cart[i].Space };
+                    fetch("https://coursework2-lession.herokuapp.com/collection/order", {
+                        method: "PUT", // set the HTTP method as 'PUT'
+                        headers: {
+                            "Content-Type": "application/json", // set the data type as JSON
+                        },
+                        body: JSON.stringify(UpdateOrder), // need to stringify the JSON object
+                    })
+                        .then(response => response.json())
+                        .then(responseJSON => {
+                            console.log('Success:', responseJSON);
+                        });
+                }
                 if (this.cart.length > 0) {
                     window.alert("Order Submited")
                 }
             },
 
-            // deleteLesson(lessons) {
-            //     var idx = this.cart.indexOf(lessons)
-            //     this.cart.splice(idx, 1)
-            //     lessons.Space++;
-            // },
+            deleteLesson(lessons) {
+                lesson.Space++;
+                this.cart.splice(this.cart.indexOf(lesson.id), 1);
+            },
 
 
             showCheckout() {
@@ -171,6 +206,7 @@
                 }
             },
         },
+
         created: function () {
             console.log("requesting data from server...");
 
