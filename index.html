@@ -132,15 +132,15 @@
 
             submit() {
                 var AddOrder = {
-                    order: this.cart.id,
+                    order: this.cart,
                     FirstName: this.order.FirstName,
                     SecondName: this.order.SecondName,
                     Phonenumber: this.order.Phonenumber,
-                    SpaceOrdered: this.cart.Space,
+                    SpaceOrdered: this.l.Space,
                 };
 
                 // set the url to your server and route
-                fetch("https://coursework2-lession.herokuapp.com/order", {
+                fetch("https://coursework2-lession.herokuapp.com/collection/order", {
                     method: "POST", // set the HTTP method as 'POST'
                     headers: {
                         "Content-Type": "application/json", // set the data type as JSON
@@ -149,34 +149,35 @@
                 })
                     .then(response => response.json())
                     .then(responseJSON => {
-                        console.log('Success:', responseJSON);
+                        console.log('Success: Add ', responseJSON);
                     });
 
 
-                // set the url to your server and route
-                for (var i = 0; i < this.cart.length; i++) {
-                    id = this.cart[i]._id;
-                    UpdateOrder = { Space: this.cart[i].Space };
-                    fetch("https://coursework2-lession.herokuapp.com/collection/order", {
-                        method: "PUT", // set the HTTP method as 'PUT'
-                        headers: {
-                            "Content-Type": "application/json", // set the data type as JSON
-                        },
-                        body: JSON.stringify(UpdateOrder), // need to stringify the JSON object
-                    })
-                        .then(response => response.json())
-                        .then(responseJSON => {
-                            console.log('Success:', responseJSON);
-                        });
-                }
+                // // set the url to your server and route
+                // for (var i = 0; i < this.cart.length; i++) {
+                //     id = this.cart[i]._id;
+                //     UpdateOrder = { Space: this.cart[i].Space };
+                //     fetch("https://coursework2-lession.herokuapp.com/collection/order", {
+                //         method: "PUT", // set the HTTP method as 'PUT'
+                //         headers: {
+                //             "Content-Type": "application/json", // set the data type as JSON
+                //         },
+                //         body: JSON.stringify(UpdateOrder), // need to stringify the JSON object
+                //     })
+                //         .then(response => response.json())
+                //         .then(responseJSON => {
+                //             console.log('Success:', responseJSON);
+                //         });
+                // }
                 if (this.cart.length > 0) {
                     window.alert("Order Submited")
                 }
             },
 
-            deleteLesson(lessons) {
-                lesson.Space++;
-                this.cart.splice(this.cart.indexOf(lesson.id), 1);
+            deleteLesson(lesson) {
+                if (this.cart.splice(this.cart.indexOf(lesson), 1)) {
+                    lesson.Spaces = lesson.Spaces + 1;
+                }
             },
 
 
