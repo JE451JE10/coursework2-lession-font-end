@@ -67,12 +67,13 @@
                         <p><strong>Location: {{lessons.Location}}</strong></p>
                         <p><b>Price: {{lessons.price}}</b></p>
                         <p><b>Space: {{lessons.Space}}</b></p>
-                        <button @click="deleteLesson(lesson)"><span class="fas fa-cart-arrow-down"></span>Delete</button>
+                        <button @click="deleteLesson(lessons)"><span class="fas fa-cart-arrow-down"></span>Delete</button>
                     </div>
                 </div>
 
 
                 <h1>Checkout</h1>
+                <button @click="resetInput">Reset Input Checkout</button>
                 <p>
                     <strong>First Name:</strong>
                     <input v-model="order.FirstName" title="Letters only." required />
@@ -131,13 +132,18 @@
                 return count;
             },
 
+            deleteLesson(lessons) {
+                if (this.cart.splice(this.cart.indexOf(lessons), 1)) {
+                    return lessons.Space++;
+                }
+            },
             submit() {
                 var AddOrder = {
                     order: this.cart,
                     FirstName: this.order.FirstName,
                     SecondName: this.order.SecondName,
                     Phonenumber: this.order.Phonenumber,
-                    SpaceOrdered: this.order.Space,
+                    SpaceOrdered: this.lessons.Space,
                 };
 
                 // set the url to your server and route
@@ -153,36 +159,19 @@
                         console.log('Success: Add ', responseJSON);
                     });
 
-                // // set the url to your server and route
-                // for (var i = 0; i < this.cart.length; i++) {
-                //     id = this.cart[i]._id;
-                //     UpdateOrder = { Space: this.cart[i].Space };
-                //     fetch("https://coursework2-lession.herokuapp.com/collection/order", {
-                //         method: "PUT", // set the HTTP method as 'PUT'
-                //         headers: {
-                //             "Content-Type": "application/json", // set the data type as JSON
-                //         },
-                //         body: JSON.stringify(UpdateOrder), // need to stringify the JSON object
-                //     })
-                //         .then(response => response.json())
-                //         .then(responseJSON => {
-                //             console.log('Success:', responseJSON);
-                //         });
-                // }
                 if (this.cart.length > 0) {
                     window.alert("Order Submited")
                 }
             },
 
-            deleteLesson(lesson) {
-                if (this.cart.splice(this.cart.indexOf(lesson), 1)) {
-                    lesson.Spaces = lesson.Spaces + 1;
-                }
-            },
-
-
             showCheckout() {
                 this.showProduct = this.showProduct ? false : true;
+            },
+
+            resetInput() {
+                this.order.FirstName = "";
+                    this.order.SecondName = "";
+                 this.order.Phonenumber = "";
             },
 
             sortTable(key, direction) {
